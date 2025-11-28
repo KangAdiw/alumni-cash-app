@@ -171,6 +171,83 @@ app.get("/api/reports", (req, res) => {
   });
 });
 
+// --- API KHUSUS DASHBOARD ---
+
+// A. Hitung Total Saldo (Pemasukan - Pengeluaran)
+app.get("/api/dashboard/balance", (req, res) => {
+  // Query matematika: Hitung Total Masuk, lalu kurangi Total Keluar
+  const sql = `
+    SELECT 
+      (SELECT COALESCE(SUM(amount),0) FROM transactions WHERE type='IN') - 
+      (SELECT COALESCE(SUM(amount),0) FROM transactions WHERE type='OUT') 
+    AS total_balance
+  `;
+
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(result[0]); // Return { total_balance: 500000 }
+  });
+});
+
+// B. Hitung Pemasukan Bulan Ini
+app.get("/api/dashboard/income-monthly", (req, res) => {
+  const sql = `
+    SELECT COALESCE(SUM(amount),0) as total_income 
+    FROM transactions 
+    WHERE type='IN' 
+    AND MONTH(date) = MONTH(CURRENT_DATE()) 
+    AND YEAR(date) = YEAR(CURRENT_DATE())
+  `;
+
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(result[0]); // Return { total_income: 100000 }
+  });
+});
+
+// C. Ambil 5 Transaksi Terakhir (Untuk Tabel Mini)
+app.get("/api/dashboard/recent-transactions", (req, res) => {
+  const sql = "SELECT * FROM transactions ORDER BY date DESC, id DESC LIMIT 5";
+
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+// D. Grafik Tahunan (Pemasukan vs Pengeluaran per Bulan)
+app.get("/api/dashboard/chart-data", (req, res) => {
+  const sql = `
+    SELECT type, amount, MONTH(date) as month 
+    FROM transactions 
+    WHERE YEAR(date) = YEAR(CURRENT_DATE())
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    // Inisialisasi data kosong untuk 12 bulan
+    const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+    const chartData = months.map((name, index) => ({
+      name: name,
+      masuk: 0,
+      keluar: 0,
+    }));
+
+    // Isi data berdasarkan hasil query
+    results.forEach((item) => {
+      const monthIndex = item.month - 1; // MySQL bulan 1-12, Array JS 0-11
+      if (item.type === "IN") {
+        chartData[monthIndex].masuk += Number(item.amount);
+      } else {
+        chartData[monthIndex].keluar += Number(item.amount);
+      }
+    });
+
+    res.json(chartData);
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
