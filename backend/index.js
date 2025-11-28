@@ -158,6 +158,19 @@ app.put("/api/transactions/:id", (req, res) => {
   });
 });
 
+// 10. GET: Laporan Transaksi berdasarkan Rentang Tanggal
+app.get("/api/reports", (req, res) => {
+  const { startDate, endDate } = req.query; // Ambil parameter dari URL
+
+  // Query SQL: Ambil transaksi di antara dua tanggal
+  const sql = "SELECT * FROM transactions WHERE date BETWEEN ? AND ? ORDER BY date ASC";
+
+  db.query(sql, [startDate, endDate], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
