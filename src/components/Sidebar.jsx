@@ -10,11 +10,11 @@ const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
 
   const menus = [
-    { name: "Dashboard", path: "/", icon: LayoutDashboard },
-    { name: "Data Alumni", path: "/alumni", icon: Users },
-    { name: "Setor Kas", path: "/transaksi", icon: Wallet },
-    { name: "Laporan", path: "/laporan", icon: FileText },
-    { name: "Pengaturan", path: "/settings", icon: Settings },
+    { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
+    { name: "Data Alumni", path: "/admin/alumni", icon: Users },
+    { name: "Setor Kas", path: "/admin/transaksi", icon: Wallet },
+    { name: "Laporan", path: "/admin/laporan", icon: FileText },
+    { name: "Pengaturan", path: "/admin/settings", icon: Settings },
   ];
 
   // Class dasar untuk sidebar

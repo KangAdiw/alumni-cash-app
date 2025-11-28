@@ -1,24 +1,28 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
-import MainLayout from "./layouts/MainLayout";
 
-// Import Halaman
+// Layouts
+import MainLayout from "./layouts/MainLayout";
+import PublicLayout from "./layouts/PublicLayout";
+
+// Pages Admin
 import DashboardHome from "./pages/DashboardHome";
 import AlumniPage from "./pages/AlumniPage";
 import TransactionPage from "./pages/TransactionPage";
 import LaporanPage from "./pages/LaporanPage";
 import SettingsPage from "./pages/SettingsPage";
-import LoginPage from "./pages/LoginPage";
-import NotFoundPage from "./pages/NotFoundPage"; // Import 404
 
-// 1. PROTECTED ROUTE (Satpam Dashboard)
-// Logika: Kalau BELUM login, tendang ke /login.
+// Pages Public & Auth
+import LandingPage from "./pages/public/LandingPage"; // Halaman Baru
+import LoginPage from "./pages/LoginPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import PublicAlumniPage from "./pages/public/PublicAlumniPage";
+
+// --- GUARDS ---
 const ProtectedRoute = () => {
   const isAuthenticated = localStorage.getItem("isLoggedIn");
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-  // Kalau sudah login, tampilkan Layout + Halaman
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  // Admin pakai MainLayout (Sidebar)
   return (
     <MainLayout>
       <Outlet />
@@ -26,14 +30,10 @@ const ProtectedRoute = () => {
   );
 };
 
-// 2. PUBLIC ROUTE (Satpam Login)
-// Logika: Kalau SUDAH login, jangan boleh masuk /login lagi (Tendang ke Dashboard).
 const PublicRoute = () => {
   const isAuthenticated = localStorage.getItem("isLoggedIn");
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-  // Kalau belum login, silakan buka Login Page
+  // Kalau sudah login admin buka /, biarkan di public.
+  // Kalau buka /login, baru lempar ke /admin
   return <Outlet />;
 };
 
@@ -41,22 +41,28 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* GROUP 1: Halaman Public (Login) */}
-        <Route element={<PublicRoute />}>
-          <Route path="/login" element={<LoginPage />} />
+        {/* === A. WEBSITE PUBLIK (Layout Navbar) === */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/profil" element={<div className="p-20 text-center">Halaman Profil (Coming Soon)</div>} />
+          <Route path="/akademik" element={<div className="p-20 text-center">Halaman Akademik (Coming Soon)</div>} />
+          <Route path="/cek-alumni" element={<PublicAlumniPage />} />
         </Route>
 
-        {/* GROUP 2: Halaman Private (Dashboard Admin) */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<DashboardHome />} />
-          <Route path="/alumni" element={<AlumniPage />} />
-          <Route path="/transaksi" element={<TransactionPage />} />
-          <Route path="/laporan" element={<LaporanPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
+        {/* === B. LOGIN ADMIN === */}
+        <Route path="/login" element={localStorage.getItem("isLoggedIn") ? <Navigate to="/admin" /> : <LoginPage />} />
+
+        {/* === C. DASHBOARD ADMIN (Layout Sidebar) === */}
+        {/* Semua route admin diawali dengan /admin */}
+        <Route path="/admin" element={<ProtectedRoute />}>
+          <Route index element={<DashboardHome />} /> {/* /admin */}
+          <Route path="alumni" element={<AlumniPage />} /> {/* /admin/alumni */}
+          <Route path="transaksi" element={<TransactionPage />} /> {/* /admin/transaksi */}
+          <Route path="laporan" element={<LaporanPage />} /> {/* /admin/laporan */}
+          <Route path="settings" element={<SettingsPage />} /> {/* /admin/settings */}
         </Route>
 
-        {/* GROUP 3: Halaman Error (404) */}
-        {/* Tanda bintang '*' artinya: URL apapun selain yang diatas */}
+        {/* === D. ERROR 404 === */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>

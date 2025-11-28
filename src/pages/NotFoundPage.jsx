@@ -20,7 +20,7 @@ const NotFoundPage = () => {
         {/* <Link to="/">
           <Button className="w-full flex items-center justify-center gap-2">
             <ArrowLeft size={18} />
-            Kembali ke Dashboard
+            Kembali ke Beranda
           </Button>
         </Link> */}
       </Card>

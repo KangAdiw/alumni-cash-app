@@ -94,7 +94,7 @@ const DashboardHome = () => {
         <Card className="h-[450px] flex flex-col">
           <div className="p-6 border-b border-gray-100 flex justify-between items-center shrink-0">
             <h3 className="font-bold text-gray-800">Transaksi Baru</h3>
-            <Link to="/transaksi" className="text-xs text-blue-600 hover:text-blue-800 font-medium">
+            <Link to="/admin/transaksi" className="text-xs text-blue-600 hover:text-blue-800 font-medium">
               Lihat Semua
             </Link>
           </div>

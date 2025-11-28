@@ -38,7 +38,7 @@ const LoginPage = () => {
         localStorage.setItem("userName", data.user.name);
 
         // 3. Pindah ke Dashboard
-        navigate("/");
+        navigate("/admin");
       } else {
         // JIKA GAGAL (Password Salah):
         setError(data.message || "Login gagal");
