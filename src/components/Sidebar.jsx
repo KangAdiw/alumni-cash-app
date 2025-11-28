@@ -42,7 +42,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       <aside className={sidebarClasses}>
         {/* Header Logo */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-gray-200 shrink-0">
-          <h1 className="text-xl font-bold text-blue-600">AlumniCash</h1>
+          <h1 className="text-xl font-bold text-blue-600">Miftahul Jannah</h1>
           <button onClick={onClose} className="md:hidden text-gray-500">
             <X size={24} />
           </button>

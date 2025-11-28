@@ -8,21 +8,34 @@ body {
 
 /* CSS untuk mode cetak */
 @media print {
-  /* Sembunyikan semua yang bukan area konten utama */
-  aside,
-  nav,
-  button,
-  .no-print {
-    display: none !important;
+  /* 1. Aturan Halaman: Margin 0 menghilangkan Header/Footer browser */
+  @page {
+    margin: 0;
+    size: auto;
   }
 
-  /* Reset margin agar full kertas */
-  main {
-    margin: 0 !important;
-    padding: 0 !important;
+  /* 2. Sembunyikan SEMUA elemen body */
+  body * {
+    visibility: hidden;
   }
 
-  body {
-    background: white;
+  /* 3. Tampilkan HANYA elemen #printable-area */
+  #printable-area,
+  #printable-area * {
+    visibility: visible;
+  }
+
+  /* 4. Posisikan area laporan */
+  #printable-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Kuncinya di sini: Karena margin halaman 0, kita pakai padding 
+       agar teks tidak mepet ke pinggir kertas */
+    padding: 20mm;
+    margin: 0;
+    background-color: white;
+    z-index: 9999;
   }
 }

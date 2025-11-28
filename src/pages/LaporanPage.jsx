@@ -79,9 +79,9 @@ const LaporanPage = () => {
       </div>
 
       {/* KERTAS LAPORAN */}
-      <Card className="p-8 min-h-[500px] print:shadow-none print:border-none print:p-0">
+      <Card id="printable-area" className="p-8 min-h-[500px] print:shadow-none print:border-none print:p-0">
         {/* KOP LAPORAN */}
-        <div className="text-center mb-8 border-b-2 border-gray-800 pb-4">
+        <div className="text-center mb-8 print:mb-2 border-b-2 border-gray-800 pb-4">
           <h1 className="text-3xl font-bold text-gray-900 uppercase tracking-wider">Laporan Kas Alumni</h1>
           <p className="text-gray-500 mt-1">
             Periode: {new Date(startDate).toLocaleDateString("id-ID")} s/d {new Date(endDate).toLocaleDateString("id-ID")}
@@ -109,17 +109,17 @@ const LaporanPage = () => {
               ) : (
                 transactions.map((item) => (
                   <tr key={item.id}>
-                    <td className="py-3 px-2 text-gray-600">{new Date(item.date).toLocaleDateString("id-ID")}</td>
-                    <td className="py-3 px-2 font-medium text-gray-800">
+                    <td className="py-3 print:py-1 px-2 text-gray-600">{new Date(item.date).toLocaleDateString("id-ID")}</td>
+                    <td className="py-3 print:py-1 px-2 font-medium text-gray-800">
                       {item.note}
                       {item.alumni_name !== "-" && <span className="text-gray-400 text-xs ml-1">({item.alumni_name})</span>}
                     </td>
-                    <td className="py-3 px-2">
+                    <td className="py-3 print:py-1 px-2">
                       <span className={`text-xs font-bold px-2 py-1 rounded-full ${item.type === "IN" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"} print:bg-transparent print:p-0`}>
                         {item.type === "IN" ? "Pemasukan" : "Pengeluaran"}
                       </span>
                     </td>
-                    <td className={`py-3 px-2 text-right font-medium ${item.type === "IN" ? "text-green-600" : "text-red-600"}`}>
+                    <td className={`py-3 print:py-1 px-2 text-right font-medium ${item.type === "IN" ? "text-green-600" : "text-red-600"}`}>
                       {item.type === "IN" ? "+" : "-"} {formatCurrency(item.amount)}
                     </td>
                   </tr>
@@ -130,7 +130,7 @@ const LaporanPage = () => {
         </div>
 
         {/* RINGKASAN FINAL (TOTAL) */}
-        <div className="mt-8 border-t-2 border-gray-800 pt-4 flex justify-end">
+        <div className="mt-8 print:mt-2 border-t-2 border-gray-800 pt-4 flex justify-end">
           <div className="w-full sm:w-1/2 space-y-2">
             <div className="flex justify-between text-sm text-gray-600">
               <span>Total Pemasukan</span>
@@ -150,8 +150,8 @@ const LaporanPage = () => {
         {/* Tanda Tangan */}
         <div className="mt-16 flex justify-end print:mt-24">
           <div className="text-center w-48">
-            <p className="text-sm text-gray-500 mb-16">Jakarta, {new Date().toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" })}</p>
-            <p className="font-bold border-t border-gray-300 pt-2 text-gray-800">Bendahara Umum</p>
+            <p className="text-sm text-gray-500 mb-16">Lumbung, {new Date().toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" })}</p>
+            <p className="font-bold border-t border-gray-300 pt-2 text-gray-800">Fahri Rizaldin</p>
           </div>
         </div>
       </Card>

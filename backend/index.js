@@ -248,6 +248,36 @@ app.get("/api/dashboard/chart-data", (req, res) => {
   });
 });
 
+// --- FITUR LOGIN ---
+
+// 11. POST: Login Check
+app.post("/api/login", (req, res) => {
+  const { email, password } = req.body;
+
+  // Cek apakah ada user dengan email DAN password tersebut
+  const sql = "SELECT * FROM users WHERE email = ? AND password = ?";
+
+  db.query(sql, [email, password], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    // Jika hasil kosong, berarti email/password salah
+    if (results.length === 0) {
+      return res.status(401).json({ message: "Email atau Password salah!" });
+    }
+
+    // Jika ketemu, kirim data user (tanpa password)
+    const user = results[0];
+    res.json({
+      message: "Login Berhasil",
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });

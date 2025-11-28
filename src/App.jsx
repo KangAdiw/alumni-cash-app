@@ -1,23 +1,24 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
+
+// Import Halaman
 import DashboardHome from "./pages/DashboardHome";
 import AlumniPage from "./pages/AlumniPage";
 import TransactionPage from "./pages/TransactionPage";
 import LaporanPage from "./pages/LaporanPage";
 import SettingsPage from "./pages/SettingsPage";
 import LoginPage from "./pages/LoginPage";
+import NotFoundPage from "./pages/NotFoundPage"; // Import 404
 
-// Komponen Pembungkus untuk memproteksi halaman
+// 1. PROTECTED ROUTE (Satpam Dashboard)
+// Logika: Kalau BELUM login, tendang ke /login.
 const ProtectedRoute = () => {
   const isAuthenticated = localStorage.getItem("isLoggedIn");
-
-  // Jika tidak ada token login, tendang ke login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-
-  // Jika login, tampilkan layout utama (Sidebar + Konten)
+  // Kalau sudah login, tampilkan Layout + Halaman
   return (
     <MainLayout>
       <Outlet />
@@ -25,14 +26,27 @@ const ProtectedRoute = () => {
   );
 };
 
+// 2. PUBLIC ROUTE (Satpam Login)
+// Logika: Kalau SUDAH login, jangan boleh masuk /login lagi (Tendang ke Dashboard).
+const PublicRoute = () => {
+  const isAuthenticated = localStorage.getItem("isLoggedIn");
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+  // Kalau belum login, silakan buka Login Page
+  return <Outlet />;
+};
+
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Route Public (Login) - Tanpa Sidebar */}
-        <Route path="/login" element={<LoginPage />} />
+        {/* GROUP 1: Halaman Public (Login) */}
+        <Route element={<PublicRoute />}>
+          <Route path="/login" element={<LoginPage />} />
+        </Route>
 
-        {/* Route Protected (Semua halaman Admin) - Pakai Sidebar */}
+        {/* GROUP 2: Halaman Private (Dashboard Admin) */}
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<DashboardHome />} />
           <Route path="/alumni" element={<AlumniPage />} />
@@ -40,6 +54,10 @@ function App() {
           <Route path="/laporan" element={<LaporanPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
+
+        {/* GROUP 3: Halaman Error (404) */}
+        {/* Tanda bintang '*' artinya: URL apapun selain yang diatas */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
   );

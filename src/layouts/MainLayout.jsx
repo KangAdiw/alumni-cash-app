@@ -19,7 +19,7 @@ const MainLayout = ({ children }) => {
           <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 hover:bg-gray-100 rounded-lg">
             <Menu size={24} />
           </button>
-          <span className="font-bold text-lg text-blue-600">AlumniCash</span>
+          <span className="font-bold text-lg text-blue-600">Miftahul Jannah</span>
         </div>
 
         {/* Konten Halaman (Dashboard, Table, dll akan muncul di sini) */}
