@@ -4,8 +4,27 @@ const mysql = require("mysql2"); // Import library MySQL
 const app = express();
 const PORT = 5000;
 
+const multer = require("multer"); // Import multer
+const path = require("path");
+
 app.use(cors());
 app.use(express.json());
+
+// AGAR FOLDER UPLOADS BISA DIAKSES DARI FRONTEND (URL)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// KONFIGURASI MULTER (Tempat simpan file)
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Simpan di folder uploads
+  },
+  filename: (req, file, cb) => {
+    // Nama file unik: id-timestamp.jpg
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage: storage });
 
 // 1. KONFIGURASI KONEKSI DATABASE
 const db = mysql.createConnection({
@@ -275,6 +294,47 @@ app.post("/api/login", (req, res) => {
         email: user.email,
       },
     });
+  });
+});
+
+// 12. PUT: Update Profil User (Nama, Email, Password, Foto)
+app.put("/api/users/:id", upload.single("photo"), (req, res) => {
+  const { id } = req.params;
+  const { name, email, password } = req.body;
+  const photo = req.file ? req.file.filename : null; // Ambil nama file jika ada upload
+
+  // Logic: Kalau ada upload foto, update kolom photo. Kalau tidak, jangan ubah.
+  let sql, values;
+
+  if (photo) {
+    // Update dengan Foto
+    sql = "UPDATE users SET name = ?, email = ?, photo = ? WHERE id = ?";
+    values = [name, email, photo, id];
+  } else {
+    // Update Tanpa Ganti Foto
+    sql = "UPDATE users SET name = ?, email = ? WHERE id = ?";
+    values = [name, email, id];
+  }
+
+  // (Catatan: Password kita skip dulu biar simpel, fokus ke foto & nama)
+
+  db.query(sql, values, (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    // Kirim balik data terbaru ke frontend
+    res.json({
+      message: "Profil berhasil diupdate",
+      photo: photo,
+    });
+  });
+});
+
+// 13. GET: Ambil Data User by ID (Buat ditampilkan di Settings)
+app.get("/api/users/:id", (req, res) => {
+  const { id } = req.params;
+  db.query("SELECT id, name, email, photo FROM users WHERE id = ?", [id], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(result[0]);
   });
 });
 
