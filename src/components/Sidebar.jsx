@@ -29,8 +29,12 @@ const Sidebar = ({ isOpen, onClose }) => {
   const handleLogout = () => {
     // 1. Hapus status login
     localStorage.removeItem("isLoggedIn");
-    // 2. Lempar ke halaman login
-    navigate("/login");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userPhoto");
+
+    // Paksa reload halaman ke /login.
+    // Ini akan membersihkan semua state React, error Recharts, dan memory leak.
+    window.location.href = "/login";
   };
 
   return (

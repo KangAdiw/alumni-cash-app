@@ -1,18 +1,36 @@
 import React from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { LogIn, Menu, X } from "lucide-react";
 import Button from "../components/ui/Button";
 
 const PublicLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
+  // --- KOMPONEN LINK DESKTOP DENGAN ANIMASI ---
+  const DesktopLink = ({ to, children }) => (
+    <NavLink to={to} className="relative group py-2">
+      {({ isActive }) => (
+        <>
+          {/* Teks Menu */}
+          <span className={`font-medium transition-colors duration-300 ${isActive ? " font-bold" : "text-gray-600 "}`}>{children}</span>
+
+          {/* Garis Animasi di Bawah */}
+          <span className={`absolute bottom-0 left-0 h-[2px] bg-blue-600 transition-all duration-300 ease-in-out ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
+        </>
+      )}
+    </NavLink>
+  );
+
+  // Helper untuk Style Menu Mobile (Tetap pakai Block Style biar enak dipencet di HP)
+  const mobileLinkClass = ({ isActive }) => `block font-medium py-2 px-3 rounded-lg transition-colors ${isActive ? "text-blue-600 font-bold bg-blue-50" : "text-gray-600 hover:bg-gray-50 hover:text-blue-600"}`;
+
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
-      {/* 1. NAVBAR (Sticky di atas) */}
+      {/* 1. NAVBAR */}
       <nav className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md border-b border-gray-100 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            {/* Logo Yayasan */}
+            {/* Logo */}
             <Link to="/" className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">M</div>
               <div>
@@ -21,24 +39,15 @@ const PublicLayout = () => {
               </div>
             </Link>
 
-            {/* Menu Desktop */}
+            {/* Menu Desktop (Pakai Komponen Baru) */}
             <div className="hidden md:flex items-center gap-8">
-              <Link to="/" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">
-                Beranda
-              </Link>
-              <Link to="/profil" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">
-                Profil
-              </Link>
-              <Link to="/akademik" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">
-                Akademik
-              </Link>
-              <Link to="/cek-alumni" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">
-                Cari Alumni
-              </Link>
+              <DesktopLink to="/">Beranda</DesktopLink>
+              <DesktopLink to="/profil">Profil</DesktopLink>
+              <DesktopLink to="/akademik">Akademik</DesktopLink>
+              <DesktopLink to="/cek-alumni">Cari Alumni</DesktopLink>
 
-              {/* Tombol Login Admin */}
               <Link to="/login">
-                <Button className="flex items-center gap-2 rounded-full px-6">
+                <Button className="flex items-center gap-2 rounded-full px-6 transition-transform hover:scale-105">
                   <LogIn size={18} />
                   Login Pengurus
                 </Button>
@@ -46,7 +55,7 @@ const PublicLayout = () => {
             </div>
 
             {/* Tombol Menu Mobile */}
-            <button className="md:hidden p-2 text-gray-600" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <button className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
@@ -54,27 +63,30 @@ const PublicLayout = () => {
 
         {/* Menu Mobile Dropdown */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-100 p-4 space-y-4 shadow-lg absolute w-full">
-            <Link to="/" className="block text-gray-600 font-medium">
+          <div className="md:hidden bg-white border-t border-gray-100 p-4 space-y-2 shadow-lg absolute w-full animate-in slide-in-from-top-5 duration-200">
+            <NavLink to="/" className={mobileLinkClass} onClick={() => setIsMenuOpen(false)}>
               Beranda
-            </Link>
-            <Link to="/profil" className="block text-gray-600 font-medium">
+            </NavLink>
+            <NavLink to="/profil" className={mobileLinkClass} onClick={() => setIsMenuOpen(false)}>
               Profil
-            </Link>
-            <Link to="/akademik" className="block text-gray-600 font-medium">
+            </NavLink>
+            <NavLink to="/akademik" className={mobileLinkClass} onClick={() => setIsMenuOpen(false)}>
               Akademik
-            </Link>
-            <Link to="/cek-alumni" className="block text-gray-600 font-medium">
+            </NavLink>
+            <NavLink to="/cek-alumni" className={mobileLinkClass} onClick={() => setIsMenuOpen(false)}>
               Cari Alumni
-            </Link>
-            <Link to="/login" className="block">
-              <Button className="w-full justify-center">Login Pengurus</Button>
-            </Link>
+            </NavLink>
+
+            <div className="pt-2 border-t border-gray-100 mt-2">
+              <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                <Button className="w-full justify-center">Login Pengurus</Button>
+              </Link>
+            </div>
           </div>
         )}
       </nav>
 
-      {/* 2. KONTEN HALAMAN PUBLIK */}
+      {/* 2. KONTEN HALAMAN */}
       <main className="flex-1 mt-20">
         <Outlet />
       </main>
@@ -90,17 +102,17 @@ const PublicLayout = () => {
             <h4 className="text-white font-bold mb-4">Tautan Cepat</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/profil" className="hover:text-white">
+                <Link to="/profil" className="hover:text-white transition-colors">
                   Tentang Kami
                 </Link>
               </li>
               <li>
-                <Link to="/akademik" className="hover:text-white">
+                <Link to="/akademik" className="hover:text-white transition-colors">
                   Pendaftaran Siswa
                 </Link>
               </li>
               <li>
-                <Link to="/cek-alumni" className="hover:text-white">
+                <Link to="/cek-alumni" className="hover:text-white transition-colors">
                   Data Alumni
                 </Link>
               </li>

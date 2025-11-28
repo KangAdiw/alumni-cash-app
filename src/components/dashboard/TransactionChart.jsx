@@ -30,7 +30,7 @@ const TransactionChart = ({ data }) => {
       </div>
 
       {/* AREA GRAFIK */}
-      <div className="flex-1 w-full min-h-0">
+      <div className="flex-1 w-full min-h-0 min-w-0">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
